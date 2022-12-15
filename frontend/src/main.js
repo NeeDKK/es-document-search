@@ -15,7 +15,7 @@ Vue.use(ElementUI);
 Vue.use(ViewUI);
 
 const instance = axios.create({
-  baseURL: '/'
+  baseURL: '/api'
 });
 
 // 配置过滤response
@@ -35,7 +35,7 @@ instance.defaults.withCredentials = true;
 instance.defaults.headers.post['Content-Type'] = 'application/json';
 instance.defaults.headers.get['Content-Type'] = 'application/json';
 
-Vue.prototype.$axios = axios;
+Vue.prototype.$axios = instance;
 axios.defaults.baseURL = 'http://localhost:9999';
 
 new Vue({

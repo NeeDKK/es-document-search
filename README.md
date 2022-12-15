@@ -9,6 +9,8 @@
 > ```shell
 > mkdir /root/es/data #数据目录
 > mkdir /root/es/plugins #插件目录
+> chmod 777 /root/es/data
+> chmod 777 /root/es/plugins
 > ```
 >
 > 1.1.2.编写容器编排文件

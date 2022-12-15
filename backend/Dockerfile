@@ -1,7 +1,7 @@
 FROM golang:alpine as builder
 
 WORKDIR /go/src/esDocumentSearch
-COPY .. .
+COPY . .
 
 RUN go env -w GO111MODULE=on
 RUN go env -w GOPROXY=https://goproxy.cn,direct

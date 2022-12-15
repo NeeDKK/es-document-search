@@ -15,7 +15,7 @@
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
             <el-form-item label="">
-              <span>{{props.row.highlight}} </span>
+              <span v-html="props.row.highlight"> </span>
             </el-form-item>
           </el-form>
         </template>

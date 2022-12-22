@@ -8,18 +8,17 @@ import (
 )
 
 var ctx = context.Background()
-var Url = "http://1.15.106.156:9200"
 var EsClient *elastic.Client
 
 func InitEs() {
 	client, err := elastic.NewClient(
-		elastic.SetSniff(false), elastic.SetURL(Url),
+		elastic.SetSniff(false), elastic.SetURL(GlobalConfig.Elasticsearch.Url),
 	)
 	if err != nil {
 		log.Fatal("es 连接失败:", err)
 	}
 	// ping通服务端，并获得服务端的es版本
-	info, code, err := client.Ping(Url).Do(ctx)
+	info, code, err := client.Ping(GlobalConfig.Elasticsearch.Url).Do(ctx)
 	if err != nil {
 		panic(err)
 	}

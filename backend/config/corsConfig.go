@@ -4,7 +4,8 @@ import "github.com/gin-gonic/gin"
 
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		origin := c.Request.Header.Get("origin") //请求头部
+		//请求头部
+		origin := c.Request.Header.Get("origin")
 		if len(origin) == 0 {
 			origin = c.Request.Header.Get("Origin")
 		}

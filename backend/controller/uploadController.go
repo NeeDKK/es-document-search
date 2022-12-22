@@ -3,9 +3,9 @@ package controller
 import (
 	"bufio"
 	"encoding/base64"
-	"esDocumentSearch/config"
-	"esDocumentSearch/entity"
 	"fmt"
+	"github.com/NeeDKK/esDocumentSearch/config"
+	"github.com/NeeDKK/esDocumentSearch/entity"
 	"github.com/gin-gonic/gin"
 	"math/rand"
 	"path"

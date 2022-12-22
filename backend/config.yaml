@@ -1,0 +1,10 @@
+server:
+  port: 9999
+
+elasticsearch:
+  url: "http://1.15.106.156:9200"
+  username: elastic
+  password: changeme
+  highlight:
+    pre_tags: "<span style='color:red'>"
+    post_tags: "</span>"

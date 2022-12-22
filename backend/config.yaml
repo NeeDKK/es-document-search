@@ -6,5 +6,5 @@ elasticsearch:
   username: elastic
   password: changeme
   highlight:
-    pre_tags: "<span style='color:red'>"
-    post_tags: "</span>"
+    preTags: "<span style='color:red'>"
+    postTags: "</span>"

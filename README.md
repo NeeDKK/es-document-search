@@ -1,3 +1,21 @@
+<h1 style="font-weight:normal">
+  <a href="http://resume.needkk.com">
+    <img src="https://cdn.jsdelivr.net/gh/NeeDKK/cloudimg@master/data/logo.png" alt="needkk" width=35>
+  </a>
+  &nbsp;resume-elasticsearch&nbsp;
+  <a href="http://resume.needkk.com"><img src="https://img.shields.io/static/v1?label=resume-elasticsearch&color=green&message=start now"/></a>
+  <a href="https://github.com/NeeDKK/es-document-search"><img src="https://img.shields.io/static/v1?label=release&color=blue&message=v1.0"/></a>
+
+</h1>
+
+个人简历通过接口上传到es中，es通过pipline解析pdf简历中的内容，并存储。
+
+提供检索api，根据关键字检索简历中的内容
+<br/>
+
+demo: http://resume.needkk.com
+<br>
+
 ## es检索文件内容
 
 ### 一、es及kibana的安装
@@ -101,7 +119,7 @@
 > docker-compose up -d
 > ```
 >
-> 
+>
 
 ### 二、es安装ik分词器和ingest-attachment文本抽取插件
 
@@ -203,10 +221,10 @@ PUT /_ingest/pipeline/resumecontent
 localhost:9999/upload
 
 {
-    "id": 1,
-    "name": "张三",
-    "school": "北京大学",
-    "content": "MS7nsr7pgJpqYXZhLOmdnuW4uOaJjuWunueahGphdmHnvJbnqIvlip/lupUs5ZKM6Imv5aW955qE57yW56CB5Lmg5oOvOyAKMi7nsr7pgJpqc3Avc2VydmxldC9qZGJjL3N0cnV0cyxzdHJ1dHMyLjEsaGliZXJuYXRlYW5ub2NhdGlvbuWSjOaKgOacrzsKMy7nhp/nu4Pkvb/nlKhteWVjbGlwc2UsZWNsaXBzZSxkcmVhbXdlYXZlcuW8gOWPkeW3peWFtzsgCjQu5bqU55So5pyN5Yqh5Zmod2VibG9naWPjgIF0b21jYXQ="
+"id": 1,
+"name": "张三",
+"school": "北京大学",
+"content": "MS7nsr7pgJpqYXZhLOmdnuW4uOaJjuWunueahGphdmHnvJbnqIvlip/lupUs5ZKM6Imv5aW955qE57yW56CB5Lmg5oOvOyAKMi7nsr7pgJpqc3Avc2VydmxldC9qZGJjL3N0cnV0cyxzdHJ1dHMyLjEsaGliZXJuYXRlYW5ub2NhdGlvbuWSjOaKgOacrzsKMy7nhp/nu4Pkvb/nlKhteWVjbGlwc2UsZWNsaXBzZSxkcmVhbXdlYXZlcuW8gOWPkeW3peWFtzsgCjQu5bqU55So5pyN5Yqh5Zmod2VibG9naWPjgIF0b21jYXQ="
 }
 ```
 
@@ -214,21 +232,21 @@ localhost:9999/upload
 
 ```json
 {
-    "code": 0,
-    "data": {
-        "_index": "resumeanalysis",
-        "_type": "_doc",
-        "_id": "NcDdFIUBuZQ-A4PtPA_t",
-        "_version": 1,
-        "result": "created",
-        "_shards": {
-            "total": 2,
-            "successful": 1,
-            "failed": 0
-        },
-        "_primary_term": 1
+  "code": 0,
+  "data": {
+    "_index": "resumeanalysis",
+    "_type": "_doc",
+    "_id": "NcDdFIUBuZQ-A4PtPA_t",
+    "_version": 1,
+    "result": "created",
+    "_shards": {
+      "total": 2,
+      "successful": 1,
+      "failed": 0
     },
-    "msg": "上传成功"
+    "_primary_term": 1
+  },
+  "msg": "上传成功"
 }
 ```
 
@@ -244,22 +262,22 @@ localhost:9999/uploadFile
 
 ```json
 {
-    "code": 0,
-    "data": {
-        "_index": "resumeanalysis",
-        "_type": "_doc",
-        "_id": "esB6FYUBuZQ-A4PtqR-a",
-        "_version": 1,
-        "result": "created",
-        "_shards": {
-            "total": 2,
-            "successful": 1,
-            "failed": 0
-        },
-        "_seq_no": 4,
-        "_primary_term": 1
+  "code": 0,
+  "data": {
+    "_index": "resumeanalysis",
+    "_type": "_doc",
+    "_id": "esB6FYUBuZQ-A4PtqR-a",
+    "_version": 1,
+    "result": "created",
+    "_shards": {
+      "total": 2,
+      "successful": 1,
+      "failed": 0
     },
-    "msg": "上传成功"
+    "_seq_no": 4,
+    "_primary_term": 1
+  },
+  "msg": "上传成功"
 }
 ```
 

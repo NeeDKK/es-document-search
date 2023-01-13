@@ -11,11 +11,20 @@
     <el-table
         :data="tableList"
         style="width: 100%">
-      <el-table-column type="expand" v-if="isShow">
+      <el-table-column type="expand" v-if="isShowSearch">
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
             <el-form-item label="">
               <span v-html="props.row.highlight"> </span>
+            </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
+      <el-table-column type="expand" v-if="isShowAll">
+        <template slot-scope="props">
+          <el-form label-position="left" inline class="demo-table-expand">
+            <el-form-item label="">
+              <span v-html="props.row._source.attachment.content"> </span>
             </el-form-item>
           </el-form>
         </template>
@@ -41,6 +50,7 @@
 
 <script>
 import api from '../utils/api'
+
 export default {
   name: 'SearchResume',
   data() {
@@ -48,20 +58,35 @@ export default {
       form: {
         searchContent: '',
       },
-      isShow:false,
-      tableList:[],
+      isShowAll: false,
+      isShowSearch: false,
+      tableList: [],
       attachmentContentList: [],
     }
   },
   methods: {
     onSubmit() {
       const searchContent = this.form.searchContent
-      this.isShow = searchContent !== '';
-      console.log(this.isShow)
       this.$axios.get(api.CONTENTSEARCH.url + `?searchContent=${searchContent}&page=1&size=99`).then(res => {
         if (res.data.code === 0) {
           this.tableList = res.data.data.hits.hits;
-          console.log( this.tableList)
+          if (searchContent === '') {
+            this.isShowAll = true
+            this.isShowSearch = false
+            for (let i = 0; i < this.tableList.length; i++) {
+              let split = this.tableList[i]._source.attachment.content.split("\n");
+              let contents = ''
+              for (let j = 0; j < split.length; j++) {
+                if(!split[j].match(/^[ ]*$/)){
+                  contents += split[j] + "</br>"
+                }
+              }
+              this.tableList[i]._source.attachment.content = contents
+            }
+          } else {
+            this.isShowAll = false
+            this.isShowSearch = true
+          }
         } else {
           this.$message.error(res.data.msg);
         }

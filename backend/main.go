@@ -12,6 +12,8 @@ func init() {
 	config.InitViper()
 	// 初始化es连接
 	config.InitEs()
+	//读取文件构建本地缓存
+	config.ReadFileForMap()
 }
 
 func main() {

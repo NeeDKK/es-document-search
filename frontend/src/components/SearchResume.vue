@@ -44,6 +44,16 @@
           label="学校">
       </el-table-column>
     </el-table>
+    <div class="block" style="text-align: right;margin-top: 30px">
+      <el-pagination
+          @current-change="handleCurrentChange"
+          :current-page="currentPage"
+          background
+          layout="prev, pager, next"
+          :page-size="pagesize"
+          :total="total">
+      </el-pagination>
+    </div>
   </div>
 
 </template>
@@ -62,14 +72,22 @@ export default {
       isShowSearch: false,
       tableList: [],
       attachmentContentList: [],
+      total: 0,
+      pagesize:20,
+      currentPage: 1,
     }
   },
   methods: {
+    handleCurrentChange(currentPage) {
+      this.currentPage = currentPage
+      this.onSubmit()
+    },
     onSubmit() {
       const searchContent = this.form.searchContent
-      this.$axios.get(api.CONTENTSEARCH.url + `?searchContent=${searchContent}&page=1&size=99`).then(res => {
+      this.$axios.get(api.CONTENTSEARCH.url + `?searchContent=${searchContent}&page=` + this.currentPage + `&size=20`).then(res => {
         if (res.data.code === 0) {
           this.tableList = res.data.data.hits.hits;
+          this.total = res.data.data.hits.total.value;
           if (searchContent === '') {
             this.isShowAll = true
             this.isShowSearch = false
@@ -77,7 +95,7 @@ export default {
               let split = this.tableList[i]._source.attachment.content.split("\n");
               let contents = ''
               for (let j = 0; j < split.length; j++) {
-                if(!split[j].match(/^[ ]*$/)){
+                if (!split[j].match(/^[ ]*$/)) {
                   contents += split[j] + "</br>"
                 }
               }

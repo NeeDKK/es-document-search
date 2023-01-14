@@ -33,7 +33,7 @@ func Search(c *gin.Context) {
 	highlightFild := elastic.NewHighlight().Fields(elastic.NewHighlighterField("attachment.content").PreTags(config.GlobalConfig.Elasticsearch.Highlight.PreTags).PostTags(config.GlobalConfig.Elasticsearch.Highlight.PostTags))
 	query.Should(elastic.NewMatchQuery("name.keyword", searchContent)).
 		Should(elastic.NewMatchQuery("school", searchContent)).
-		Should(elastic.NewMatchQuery("attachment.content", searchContent).Analyzer("ik_max_word"))
+		Should(elastic.NewMatchQuery("attachment.content", searchContent).Analyzer("ik_smart"))
 	searchContentResult, err := config.EsClient.Search(config.RESUMEINDEX).Query(query).Highlight(highlightFild).Size(sizeInt).From((pageInt - 1) * sizeInt).Do(c)
 	if err != nil {
 		fmt.Println("查询失败", err.Error())

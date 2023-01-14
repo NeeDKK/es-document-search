@@ -22,11 +22,9 @@ func main() {
 	engine := gin.Default()
 	//配置跨域
 	engine.Use(config.Cors())
-	//设置信任请求地址
-	engine.SetTrustedProxies([]string{"127.0.0.1"})
-	engine.POST("/upload", controller.Upload)
 	engine.GET("/search", controller.Search)
 	engine.POST("/uploadFile", controller.UploadFile)
+	engine.POST("/firstImport", controller.FirstImport)
 	//启动gin服务
 	engine.Run(":" + strconv.Itoa(config.GlobalConfig.Server.Port))
 }

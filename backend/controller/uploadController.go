@@ -15,7 +15,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -39,26 +38,12 @@ var nameForbidenMap = map[string]string{
 	"公司 技术": "name",
 	"通信工":   "name",
 	"公司 协议": "name",
+	"项目维护":  "name",
+	"简历编号":  "name",
+	"查询":    "name",
 }
 
 type UploadController struct {
-}
-
-func Upload(c *gin.Context) {
-	var resume entity.Resume
-	err := c.ShouldBindJSON(&resume)
-	if err != nil {
-		fmt.Println("参数绑定失败:", err.Error())
-	}
-	sEnc := base64.StdEncoding.EncodeToString([]byte(resume.Content))
-	resume.Content = sEnc
-	do, err := config.EsClient.Index().Index(config.RESUMEINDEX).BodyJson(resume).Pipeline(config.RESUMEPIPLINE).Do(c)
-	if err != nil {
-		fmt.Println(err.Error())
-		entity.FailWithDetailed(err, "上传失败", c)
-		return
-	}
-	entity.OkWithDetailed(do, "上传成功", c)
 }
 
 func UploadFile(c *gin.Context) {
@@ -67,14 +52,14 @@ func UploadFile(c *gin.Context) {
 	ext := path.Ext(file.Filename)
 	// 读取文件名
 	name := strings.TrimSuffix(file.Filename, ext)
-	f, openError := file.Open() // 读取文件
+	// 读取文件
+	f, openError := file.Open()
 	if openError != nil {
 		fmt.Println("function file.Open() Filed", openError.Error())
 		entity.FailWithDetailed(openError, "上传文件"+name+"失败", c)
 		return
 	}
 	defer f.Close() // 创建文件 defer 关闭
-
 	if err != nil {
 		fmt.Println("文件上传失败:", err.Error())
 	}
@@ -85,11 +70,16 @@ func UploadFile(c *gin.Context) {
 	buffer.Read(bytes)
 	//将字节数组转换为base64的字符串
 	doc := base64.StdEncoding.EncodeToString(bytes)
+	do := FileToEs(c, doc)
+	entity.OkWithDetailed(do, "上传成功", c)
+}
+
+func FileToEs(c *gin.Context, doc string) *elastic.IndexResponse {
 	var resume entity.Resume
 	rand.Seed(time.Now().UnixNano())
-	//正常从数据库读取
+	//正常从数据库读取,这里随机生成
 	resume.ID = uint(rand.Intn(9999))
-	//录入简历数据时，从用户输入读取
+	//录入简历数据时，从用户输入读取,这里随机生成
 	resume.Name = "name:" + strconv.Itoa(int(resume.ID))
 	resume.Content = doc
 	//定义索引和pipline写入es
@@ -97,19 +87,15 @@ func UploadFile(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err.Error())
 		entity.FailWithDetailed(err, "上传失败", c)
-		return
+		return nil
 	}
-	var WaitGroup sync.WaitGroup
-	WaitGroup.Add(1)
 	//通过携程异步的方式执行回查赋值
-	go searchPiplineHandleContent(&WaitGroup, do.Id, c)
-	entity.OkWithDetailed(do, "上传成功", c)
-	WaitGroup.Wait()
+	go searchPiplineHandleContent(do.Id, c)
+	return do
 }
 
 //通过完成上传后的简历反查，填充简历的姓名和学校
-func searchPiplineHandleContent(WaitGroup *sync.WaitGroup, id string, c *gin.Context) {
-	defer WaitGroup.Done()
+func searchPiplineHandleContent(id string, c *gin.Context) {
 	time.Sleep(3 * time.Second)
 	query := elastic.NewBoolQuery().Must(elastic.NewMatchQuery("_id", id))
 	do, err := config.EsClient.Search(config.RESUMEINDEX).Query(query).Do(c)
@@ -135,11 +121,15 @@ func searchPiplineHandleContent(WaitGroup *sync.WaitGroup, id string, c *gin.Con
 				}
 			}
 		}
-
-		//if strings.Contains(content, "姓名:") {
-		//	split := strings.Split(content, "姓名:")
-		//	fmt.Println(split[1][0:3])
-		//} else {
+		rexFirst := "(姓)[\u4E00-\u9FA5|\u00A0|\u0020|\u3000]{1,3}"
+		compile, err := regexp.Compile(rexFirst)
+		if err != nil {
+			log.Fatalf("正则匹配失败:", err.Error())
+		}
+		matchStringFirstName := compile.FindAllString(content, -1)
+		if len(matchStringFirstName) != 0 {
+			content = strings.Split(content, matchStringFirstName[0])[1]
+		}
 		regEx := "(王|李|张|刘|陈|杨|黄|赵|吴|周|徐|孙|马|朱|胡|郭|何|高|林|罗|郑|梁|谢|宋|唐|许|韩|冯|邓|曹|彭|曾" +
 			"|肖|田|董|袁|潘|于|蒋|蔡|余|杜|叶|程|苏|魏|吕|丁|任|沈|姚|卢|姜|崔|钟|谭|陆|汪|范|金|石|廖|贾|夏|韦|傅" +
 			"|方|白|邹|孟|熊|秦|邱|江|尹|薛|闫|段|雷|侯|龙|史|黎|贺|顾|毛|郝|龚|邵|万|钱|覃|武|戴|孔|汤|庞|樊|兰|殷" +
@@ -157,8 +147,8 @@ func searchPiplineHandleContent(WaitGroup *sync.WaitGroup, id string, c *gin.Con
 			"|公冶|宗政|濮阳|淳于|单于|太叔|申屠|公孙|仲孙|轩辕|令狐|钟离|宇文|长孙|慕容|鲜于|闾丘|司徒|司空|亓官" +
 			"|司寇|仉|督|子车|颛孙|端木|巫马|公西|漆雕|乐正|壤驷|公良|拓跋|夹谷|宰父|谷粱|法|汝|钦|段干|百里|东郭" +
 			"|南门|呼延|归海|羊舌|微生|帅|缑|亢|况|郈|琴|梁丘|左丘|东门|西门|佘|佴|伯|赏|南宫|墨|哈|谯" +
-			"|笪|年|爱|仝|代)[\u4E00-\u9FA5|\u00A0|\u0020|\u3000]{1,5}"
-		compile, err := regexp.Compile(regEx)
+			"|笪|年|爱|仝|代)[\u4E00-\u9FA5|\u00A0|\u0020|\u3000]{1,4}"
+		compile, err = regexp.Compile(regEx)
 		if err != nil {
 			log.Fatalf("正则匹配失败:", err.Error())
 		}
@@ -176,7 +166,7 @@ func searchPiplineHandleContent(WaitGroup *sync.WaitGroup, id string, c *gin.Con
 				break
 			}
 		}
-		//}
+
 		_, err = config.EsClient.Update().Index(config.RESUMEINDEX).Id(id).Doc(map[string]interface{}{"school": School, "name": Name}).Do(c)
 		if err != nil {
 			log.Fatalf("update es failure:" + err.Error())

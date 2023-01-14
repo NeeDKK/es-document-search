@@ -16,6 +16,10 @@
 demo: http://resume.needkk.com
 <br>
 
+> - node版本 > v14
+> - golang版本 >= v1.17
+> - elasticsearch > v7.7
+
 ## es检索文件内容
 
 ### 一、es及kibana的安装
@@ -160,19 +164,19 @@ PUT /resumeanalysis
       },
       "name": {
         "type": "text",
-        "analyzer": "ik_max_word",
-        "search_analyzer": "ik_max_word"
+        "analyzer": "ik_smart",
+        "search_analyzer": "ik_smart"
       },
       "school": {
         "type": "text",
-        "analyzer": "ik_max_word"
+        "analyzer": "ik_smart"
       },
       "attachment": {
         "properties": {
           "content": {
             "type": "text",
-            "analyzer": "ik_max_word",
-            "search_analyzer": "ik_max_word"
+            "analyzer": "ik_smart",
+            "search_analyzer": "ik_smart"
           }
         }
       }

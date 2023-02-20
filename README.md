@@ -4,7 +4,7 @@
   </a>
   &nbsp;resume-elasticsearch&nbsp;
   <a href="http://resume.needkk.com"><img src="https://img.shields.io/static/v1?label=resume-elasticsearch&color=green&message=start now"/></a>
-  <a href="https://github.com/NeeDKK/es-document-search"><img src="https://img.shields.io/static/v1?label=release&color=blue&message=v1.0"/></a>
+  <a href="https://github.com/NeeDKK/es-document-search" target="_blank"><img src="https://img.shields.io/static/v1?label=release&color=blue&message=v1.0"/></a>
 
 </h1>
 
